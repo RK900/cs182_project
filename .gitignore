@@ -1,2 +1,5 @@
 yelp_review_training_dataset.jsonl
-
+__pycache__/
+.vscode/
+*.pkl
+.ipynb_checkpoints/

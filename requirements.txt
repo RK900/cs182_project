@@ -3,3 +3,5 @@ segtok
 ipykernel
 jupyter
 tqdm
+torch
+sklearn
