@@ -79,23 +79,23 @@ def run_training_loop(
           optimizer.zero_grad()
           loss.backward()
           optimizer.step()
-          if i % 10 == 0:
-              model.eval()
-              if False:
-                validation_prediction = th.flatten(model(validation_batch_input, validation_batch_mask))
-                validation_loss = loss_fn(validation_prediction, validation_batch_target).item()
-              else:
-                validation_prediction = model(validation_batch_input, validation_batch_mask)
-                validation_loss = loss_fn(validation_prediction, validation_batch_target).item()
-              # print(validation_prediction)
-              if False:
-                validation_accuracy = th.mean(th.eq(th.round(validation_prediction * 2), th.round(validation_batch_target * 2)).float())
-              else:
-                max_validation_prediction = th.argmax(validation_prediction, dim=1)
-                validation_accuracy = th.mean(th.eq(max_validation_prediction, validation_batch_target).float())
-              validation_accuracies.append(validation_accuracy.item())
-              model.train()
-              t.set_description(f"Epoch: {epoch} Iteration: {i} Loss: {np.mean(losses[-20:]):.3f} Validation Loss: {validation_loss:.3f} Accuracy: {np.mean(accuracies[-10:]):.3f} Validation Accuracy: {np.mean(validation_accuracies[-10:]):.3f}")
+          if i % 100 == 0:
+            model.eval()
+            if False:
+              validation_prediction = th.flatten(model(validation_batch_input, validation_batch_mask))
+              validation_loss = loss_fn(validation_prediction, validation_batch_target).item()
+            else:
+              validation_prediction = model(validation_batch_input, validation_batch_mask)
+              validation_loss = loss_fn(validation_prediction, validation_batch_target).item()
+            # print(validation_prediction)
+            if False:
+              validation_accuracy = th.mean(th.eq(th.round(validation_prediction * 2), th.round(validation_batch_target * 2)).float())
+            else:
+              max_validation_prediction = th.argmax(validation_prediction, dim=1)
+              validation_accuracy = th.mean(th.eq(max_validation_prediction, validation_batch_target).float())
+            validation_accuracies.append(validation_accuracy.item())
+            model.train()
+          t.set_description(f"Epoch: {epoch} Iteration: {i} Loss: {np.mean(losses[-20:]):.3f} Validation Loss: {validation_loss:.3f} Accuracy: {np.mean(accuracies[-10:]):.3f} Validation Accuracy: {np.mean(validation_accuracies[-10:]):.3f}")
       # save your latest model
       th.save(model.state_dict(), f"model_{model_id}.pt")
 

@@ -3,3 +3,5 @@ __pycache__/
 .vscode/
 *.pkl
 .ipynb_checkpoints/
+*.pt
+bert_model_save_from_training/
