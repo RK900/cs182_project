@@ -7,6 +7,8 @@ import torch as th
 
 import os
 
+regressive_bert_style = False
+
 T = TypeVar("T")
 def split_train_validation(source_data: List[T], val_percent: float) -> Tuple[List[T], List[T], List[T], List[T]]:
   X = [i[0] for i in source_data]
@@ -56,20 +58,20 @@ def run_training_loop(
             train_y[batch_indices],
             train_mask[batch_indices]
           )
-          if False:
+          if regressive_bert_style:
             (batch_input, batch_target, batch_mask) = batch_to_torch(batch_input, batch_target, batch_mask)
           else:
             (batch_input, batch_target, batch_mask) = batch_to_torch(batch_input, (batch_target - 1) * 2, batch_mask)
           (batch_input, batch_target, batch_mask) = list_to_device((batch_input, batch_target, batch_mask), device)
           
-          if False:
+          if regressive_bert_style:
             prediction = th.flatten(model(batch_input, batch_mask))
             loss = loss_fn(prediction, batch_target)
           else:
             prediction = model(batch_input, batch_mask)
             loss = loss_fn(prediction, batch_target)
           losses.append(loss.item())
-          if False:
+          if regressive_bert_style:
             accuracy = th.mean(th.eq(th.round(prediction * 2), th.round(batch_target * 2)).float())
           else:
             max_prediction = th.argmax(prediction, dim=1)
@@ -81,14 +83,14 @@ def run_training_loop(
           optimizer.step()
           if i % 100 == 0:
             model.eval()
-            if False:
+            if regressive_bert_style:
               validation_prediction = th.flatten(model(validation_batch_input, validation_batch_mask))
               validation_loss = loss_fn(validation_prediction, validation_batch_target).item()
             else:
               validation_prediction = model(validation_batch_input, validation_batch_mask)
               validation_loss = loss_fn(validation_prediction, validation_batch_target).item()
-            # print(validation_prediction)
-            if False:
+
+            if regressive_bert_style:
               validation_accuracy = th.mean(th.eq(th.round(validation_prediction * 2), th.round(validation_batch_target * 2)).float())
             else:
               max_validation_prediction = th.argmax(validation_prediction, dim=1)

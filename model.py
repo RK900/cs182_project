@@ -6,6 +6,8 @@ from torch.nn.modules import rnn
 
 from transformers import DistilBertForSequenceClassification, PretrainedConfig
 
+regressive_bert_style = False
+
 # Using a basic RNN/LSTM for Language modeling
 class ReviewPredictionModel(nn.Module):
     def __init__(self, vocab_size, rnn_size_token_count, num_layers=1, dropout=0):
@@ -15,7 +17,7 @@ class ReviewPredictionModel(nn.Module):
         # self.lstm = nn.LSTM(input_size=rnn_size_token_count, hidden_size=rnn_size, num_layers=num_layers, bidirectional=True, batch_first=True)
         # self.linear = nn.Linear(rnn_size_token_count * 2, 1)
         self.token_count = rnn_size_token_count
-        if False:
+        if regressive_bert_style:
           self.transformer = DistilBertForSequenceClassification.from_pretrained('distilbert-base-uncased')
         else:
           self.transformer = DistilBertForSequenceClassification.from_pretrained('distilbert-base-uncased', num_labels=9)
@@ -29,7 +31,7 @@ class ReviewPredictionModel(nn.Module):
         # lstm_forward_last = through_lstm[:,-1,:self.rnn_size]
         # lstm_backward_last = through_lstm[:,0,self.rnn_size:]
 
-        if False:
+        if regressive_bert_style:
           transfomer_logit = self.transformer(input_ids=x, attention_mask=x_mask, return_dict=True)["logits"][:,0]
           return th.sigmoid(transfomer_logit) * 4 + 1 # soft clipping to the review range
         else:
