@@ -9,3 +9,11 @@ def load_dataset(file: str) -> List[Tuple[str, float]]:
       parsed_line = json.loads(line)
       out.append((parsed_line["text"], parsed_line["stars"]))
   return out
+
+def load_gen_dataset(file: str) -> List[Tuple[str, float]]:
+  out = []
+  with open(file, "r") as file:
+    loaded = json.loads(json.load(file))
+    for text in loaded.keys():
+      out.append((text, loaded[text]))
+  return out
