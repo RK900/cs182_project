@@ -1,13 +1,11 @@
-import pickle
+import hickle
 import os.path
 
 def memo_load(value, key: str):
-  pkl_path = f"{key}.pkl"
-  if os.path.exists(pkl_path):
-    with open(pkl_path, "rb") as pkl_file:
-      return pickle.load(pkl_file)
+  hkl_path = f"{key}.hkl"
+  if os.path.exists(hkl_path):
+    return hickle.load(hkl_path)
   else:
     got_value = value()
-    with open(pkl_path, "wb") as pkl_file:
-      pickle.dump(got_value, pkl_file)
+    hickle.dump(got_value, hkl_path, mode="w")
     return got_value
