@@ -7,3 +7,6 @@ torch
 sklearn
 transformers
 spacy
+pandas
+nltk
+seaborn
