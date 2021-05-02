@@ -7,3 +7,5 @@ __pycache__/
 bert_model_save_from_training/
 jupyterlab/
 *.hkl
+*.csv
+*.bin
