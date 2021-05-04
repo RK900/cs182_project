@@ -14,21 +14,21 @@ class ReviewPredictionModel(nn.Module):
     def __init__(self, embedded_size, rnn_size, num_layers=1, dropout=0):
         super().__init__()
         self.rnn_size = rnn_size
-        self.lstm = nn.LSTM(input_size=embedded_size, hidden_size=rnn_size * 4, num_layers=num_layers, batch_first=True)
+        self.lstm = nn.LSTM(input_size=embedded_size, hidden_size=rnn_size, num_layers=num_layers, batch_first=True)
         self.linear1 = nn.Linear(embedded_size * 10, embedded_size * 5)
         self.linear2 = nn.Linear(embedded_size * 5, embedded_size * 2)
         self.linear3 = nn.Linear(embedded_size * 2, embedded_size * 1)
         self.finalLinear = nn.Linear(embedded_size * 1, 9)
-        self.linear = nn.Linear(rnn_size*4, 9)
+        self.linear = nn.Linear(rnn_size, 9)
 
     def forward(self, x):
-        # through_lstm,  _ = self.lstm(x)
-        # return self.linear(through_lstm[:,-1,:])
-        x = x.reshape((x.shape[0], x.shape[1] * x.shape[2]))
-        x = th.relu(self.linear1(x))
-        x = th.relu(self.linear2(x))
-        x = th.relu(self.linear3(x))
-        return self.finalLinear(x)
+        through_lstm,  _ = self.lstm(x)
+        return self.linear(through_lstm[:,-1,:])
+#         x = x.reshape((x.shape[0], x.shape[1] * x.shape[2]))
+#         x = th.relu(self.linear1(x))
+#         x = th.relu(self.linear2(x))
+#         x = th.relu(self.linear3(x))
+#         return self.finalLinear(x)
         # return self.finalLinear(x[:, 0, :])
     
     def run_batch(self, device, loss_fn, batch_input, batch_target, batch_mask):

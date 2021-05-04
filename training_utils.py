@@ -32,12 +32,16 @@ def run_training_loop(
   batch_size: int, epochs: int,
   train_x: List[str], train_mask, train_y: List[float],
   validation_x: List[str], validation_mask, validation_y: List[float],
-  model_id: str = "experiment", tag: str = "model"
+  max_validation_examples = 64,
+  model_id: str = "experiment", tag: str = "model",
+  store_path = None
 ):
+  if not store_path:
+    store_path = f"completed-experiments/{model_id}/{tag}.pt"
   (validation_batch_input, validation_batch_target, validation_batch_mask) = (
-    validation_x[:64,:],
-    validation_y[:64],
-    validation_mask[:64] if validation_mask is not None else None
+    validation_x[:max_validation_examples,:],
+    validation_y[:max_validation_examples],
+    validation_mask[:max_validation_examples] if validation_mask is not None else None
   )
 
   loss_fn = model.loss_fn()
@@ -59,38 +63,39 @@ def run_training_loop(
         train_mask[batch_indices] if train_mask is not None else None
       )
 
+      optimizer.zero_grad(set_to_none=True)
       loss, accuracy = model.run_batch(
         device, loss_fn,
         batch_input, batch_target, batch_mask
       )
       losses.append(loss.item())
       accuracies.append(accuracy)
-
-      optimizer.zero_grad()
       loss.backward()
       optimizer.step()
+
       if i % 100 == 0:
-        model.eval()
-        validation_loss, valid_accuracy = model.run_batch(
-          device, loss_fn,
-          validation_batch_input, validation_batch_target, validation_batch_mask
-        )
-        validation_loss = validation_loss.item()
-        validation_accuracies.append(valid_accuracy)
-        model.train()
+        with th.no_grad():
+          validation_loss, valid_accuracy = model.run_batch(
+            device, loss_fn,
+            validation_batch_input, validation_batch_target, validation_batch_mask
+          )
+          validation_loss = validation_loss.item()
+          validation_accuracies.append(valid_accuracy)
       t.set_description(f"Epoch: {epoch} Iteration: {i} Loss: {np.mean(losses[-20:]):.3f} Validation Loss: {validation_loss:.3f} Accuracy: {np.mean(accuracies[-10:]):.3f} Validation Accuracy: {np.mean(validation_accuracies[-10:]):.3f}")
+    
     # save your latest model
-    th.save(model.state_dict(), f"completed-experiments/{model_id}/{tag}.pt")
+    th.save(model.state_dict(), store_path)
 
-    bert_output_dir = f"./bert_model_save_from_training/{model_id}/"
-    # Create output directory if needed
-    if not os.path.exists(bert_output_dir):
-      os.makedirs(bert_output_dir)
+    #     bert_output_dir = f"./bert_model_save_from_training/{model_id}/"
+    #     # Create output directory if needed
+    #     if not os.path.exists(bert_output_dir):
+    #       os.makedirs(bert_output_dir)
 
-    if hasattr(model, "transformer"):
-      print(f"Saving BERT model to {bert_output_dir}")
-      bert = model.transformer
-      model_to_save = bert.module if hasattr(bert, 'module') else bert  # Take care of distributed/parallel training
-      model_to_save.save_pretrained(bert_output_dir)
-      bert.config.save_pretrained(bert_output_dir)
+    #     if hasattr(model, "transformer"):
+    #       print(f"Saving BERT model to {bert_output_dir}")
+    #       bert = model.transformer
+    #       model_to_save = bert.module if hasattr(bert, 'module') else bert  # Take care of distributed/parallel training
+    #       model_to_save.save_pretrained(bert_output_dir)
+    #       bert.config.save_pretrained(bert_output_dir)
+  model.eval()
   return accuracies, validation_accuracies
