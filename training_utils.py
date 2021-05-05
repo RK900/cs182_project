@@ -64,10 +64,11 @@ def run_training_loop(
       )
 
       optimizer.zero_grad(set_to_none=True)
-      loss, accuracy = model.run_batch(
-        device, loss_fn,
-        batch_input, batch_target, batch_mask
-      )
+      with th.cuda.amp.autocast():
+        loss, accuracy = model.run_batch(
+          device, loss_fn,
+          batch_input, batch_target, batch_mask
+        )
       losses.append(loss.item())
       accuracies.append(accuracy)
       loss.backward()

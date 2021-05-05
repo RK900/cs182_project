@@ -70,3 +70,37 @@ class ReviewPredictionModel(nn.Module):
             return th.nn.MSELoss()
         else:
             return th.nn.CrossEntropyLoss()
+        
+
+class DiscriminatorModel(nn.Module):
+    def __init__(self, transformer, num_labels):
+        super().__init__()
+        self.num_labels = num_labels
+        self.transformer = transformer
+        
+    def forward(self,x,x_mask):
+#         x = x[:,:self.token_count]
+#         x_mask = x_mask[:,:self.token_count]
+        
+        # embedded_input = self.embedding(x)
+        # through_lstm,  _ = self.lstm(embedded_input)
+        # lstm_forward_last = through_lstm[:,-1,:self.rnn_size]
+        # lstm_backward_last = through_lstm[:,0,self.rnn_size:]
+
+        if True:
+          transfomer_logit = self.transformer(input_ids=x, attention_mask=x_mask, return_dict=True)["logits"][:,:self.num_labels]
+          return transfomer_logit
+    
+    def run_batch(self, device, loss_fn, batch_input, batch_target, batch_mask):
+        (batch_input, batch_target, batch_mask) = batch_to_torch(batch_input, batch_target, batch_mask)
+        (batch_input, batch_target, batch_mask) = list_to_device((batch_input, batch_target, batch_mask), device)
+        
+        prediction = self(batch_input, batch_mask)
+        loss = loss_fn(prediction, batch_target)
+
+        max_prediction = th.argmax(prediction, dim=1)
+        accuracy = th.mean(th.eq(max_prediction, batch_target).float())
+        return loss, accuracy.item()
+    
+    def loss_fn(self):
+        return th.nn.CrossEntropyLoss()
