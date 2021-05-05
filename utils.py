@@ -1,6 +1,7 @@
 import hickle
 import os.path
 import os
+import hashlib
 
 def memo_load(value, key: str):
   hkl_path = f"{key}.hkl"
@@ -19,3 +20,6 @@ def manual_memo(compute, store, load, folder):
     return computed
   else:
     return load(folder)
+
+def hash_key(key):
+  return str(hashlib.sha256(key.encode("utf-8")).hexdigest())[:8]
