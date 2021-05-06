@@ -17,3 +17,11 @@ def load_gen_dataset(file: str) -> List[Tuple[str, float]]:
     for text in loaded.keys():
       out.append((text, loaded[text]))
   return out
+
+def load_preprocessed_dataset(file: str) -> List[Tuple[str, float]]:
+  out = []
+  with open(file, "r") as file:
+    loaded = json.loads(json.load(file))
+    for elem in loaded:
+      out.append((elem["text"], elem["stars"]))
+  return out

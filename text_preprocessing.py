@@ -1,15 +1,11 @@
 import numpy as np
-from data_parsing import load_dataset
 import re
 import num2words
-import json
 from unidecode import unidecode
 
-def preprocess(in_file, out_file):
-    data = load_dataset(in_file)
+def preprocess(data):
     out = []
-    for d in data:
-        review, stars = d[0], d[1]
+    for review in data:
         #Replace numbers with word repr
         text = re.sub(r"(\d+)", lambda x: num2words.num2words(int(x.group(0))), review) 
         #Remove all extra whitespaces by splitting string
@@ -19,10 +15,6 @@ def preprocess(in_file, out_file):
         text = " ".join(deduped_text) 
         #Replace unicode chars with ascii
         text = unidecode(text)
-        dict_obj = {}
-        dict_obj['text'], dict_obj['stars'] = text, stars
-        out.append(dict_obj)
+        out.append(text)
         
-    with open(out_file, "w") as write_file:
-        json.dump(out, write_file, indent=4)
-    write_file.close()
+    return out
