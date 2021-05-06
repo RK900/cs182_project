@@ -2,7 +2,7 @@ import papermill as pm
 
 matrix = [
   ("max_training_samples", [10000, 100000, 200000]),
-  ("lstm_hidden_size", [512, 1024, 2048]),
+  ("lstm_hidden_size", [64, 128, 256, 512, 1024, 2048]),
   ("epochs", [20])
 ]
 
@@ -27,4 +27,5 @@ def run_matrix(cur_matrix, cur_params):
       new_params[key] = option
       run_matrix(cur_matrix[1:], new_params)
 
-run_matrix(matrix, dict())
+if __name__ == "__main__":
+  run_matrix(matrix, dict())

@@ -15,10 +15,10 @@ class ReviewPredictionModel(nn.Module):
         super().__init__()
         self.rnn_size = rnn_size
         self.lstm = nn.LSTM(input_size=embedded_size, hidden_size=rnn_size, num_layers=num_layers, batch_first=True)
-        self.linear1 = nn.Linear(embedded_size * 10, embedded_size * 5)
-        self.linear2 = nn.Linear(embedded_size * 5, embedded_size * 2)
-        self.linear3 = nn.Linear(embedded_size * 2, embedded_size * 1)
-        self.finalLinear = nn.Linear(embedded_size * 1, 9)
+        self.linear1 = nn.Linear(rnn_size, rnn_size // 2)
+        self.linear2 = nn.Linear(rnn_size // 2, rnn_size // 4)
+        self.linear3 = nn.Linear(rnn_size // 4, rnn_size // 8)
+        self.finalLinear = nn.Linear(rnn_size // 8, 9)
         self.linear = nn.Linear(rnn_size, 9)
 
     def forward(self, x):
