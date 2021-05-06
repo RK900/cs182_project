@@ -10,3 +10,5 @@ spacy
 pandas
 nltk
 seaborn
+num2words
+unidecode
