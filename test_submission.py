@@ -7,8 +7,13 @@ from transformers import BertTokenizerFast, BertForSequenceClassification
 
 from spacy.lang.en import English
 
+with open('model-config.json', 'r') as f:
+  best_accuracy_params = json.load(f)
+
 num_sentences = 10
 max_tokenized_length = 64
+embedding_size = 769
+lstm_hidden_size = best_accuracy_params["lstm_hidden_size"]
 
 nlp = English()
 nlp.add_pipe("sentencizer")
@@ -56,7 +61,7 @@ def get_embeds(text):
 	return embeddeds
 
 main_model = ReviewPredictionModel(
-	769, 2048
+	embedding_size, lstm_hidden_size
 )
 main_model.load_state_dict(th.load(f"main-model.pt"))
 main_model.eval()

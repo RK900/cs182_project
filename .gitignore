@@ -13,4 +13,5 @@ jupyterlab/
 *.json
 yelp_dataset/
 yelp_dataset.tar
-submission.zip
+CookieMonster/
+CookieMonster.zip

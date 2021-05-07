@@ -1,4 +1,5 @@
 import papermill as pm
+import nbclient
 
 matrix = [
   ("regressive_style_finetuning", [False, True]),
@@ -28,7 +29,14 @@ def run_matrix(cur_matrix, cur_params):
       cur_params["experiment_id"] = run_id
       print("\n" * 10)
       print(f"RUNNING STUDY: {run_id}")
-      pm.execute_notebook("./model-training-sentence-lstm.ipynb", out_path, cur_params, log_output=True)
+      while True:
+        try:
+          pm.execute_notebook("./model-training-sentence-lstm.ipynb", out_path, cur_params, log_output=True)
+          break
+        except nbclient.exceptions.DeadKernelError:
+          print("----------------------")
+          print("RETRYING")
+          print("----------------------")
   else:
     key, options = cur_matrix[0]
     for option in options:
