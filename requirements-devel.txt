@@ -1,0 +1,14 @@
+sentencepiece
+segtok
+ipykernel
+jupyter
+tqdm
+torch
+sklearn
+transformers
+spacy
+pandas
+nltk
+seaborn
+num2words
+unidecode

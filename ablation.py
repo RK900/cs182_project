@@ -5,7 +5,8 @@ matrix = [
   ("enable_orig", [False, "orig", "preprocess"]),
   ("enable_aug", [False, True]),
   ("enable_aug3", [False, True]),
-  ("max_training_samples", [10000, 100000, 200000]),
+  #("max_training_samples", [10000, 100000, 200000]),
+  ("max_training_samples", [200000]),
   ("lstm_hidden_size", [64, 128, 256, 512, 1024, 2048]),
   ("epochs", [20])
 ]

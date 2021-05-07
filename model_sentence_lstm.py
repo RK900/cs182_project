@@ -1,8 +1,5 @@
-import numpy as np
-from segtok import tokenizer
 import torch as th
 from torch import nn
-from torch.nn.modules import rnn
 
 batch_to_torch = lambda b_in,b_target: (th.tensor(b_in, dtype=th.float),
                                         th.tensor(b_target, dtype=th.float if False else th.long))

@@ -9,3 +9,8 @@ jupyterlab/
 *.hkl
 *.csv
 *.bin
+*.jsonl
+*.json
+yelp_dataset/
+yelp_dataset.tar
+submission.zip
