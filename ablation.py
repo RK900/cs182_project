@@ -1,5 +1,6 @@
 import papermill as pm
 import nbclient
+import os
 
 matrix = [
   ("regressive_style_finetuning", [False, True]),
@@ -26,17 +27,18 @@ def run_matrix(cur_matrix, cur_params):
     if is_valid_params(cur_params):
       run_id = get_id(cur_params)
       out_path = f"completed-experiments/{run_id}.ipynb"
-      cur_params["experiment_id"] = run_id
-      print("\n" * 10)
-      print(f"RUNNING STUDY: {run_id}")
-      while True:
-        try:
-          pm.execute_notebook("./model-training-sentence-lstm.ipynb", out_path, cur_params, log_output=True)
-          break
-        except nbclient.exceptions.DeadKernelError:
-          print("----------------------")
-          print("RETRYING")
-          print("----------------------")
+      if not os.path.exists(f"completed-experiments/{run_id}/main-accuracies.hkl"):
+        cur_params["experiment_id"] = run_id
+        print("\n" * 10)
+        print(f"RUNNING STUDY: {run_id}")
+        while True:
+          try:
+            pm.execute_notebook("./model-training-sentence-lstm.ipynb", out_path, cur_params, log_output=True)
+            break
+          except nbclient.exceptions.DeadKernelError:
+            print("----------------------")
+            print("RETRYING")
+            print("----------------------")
   else:
     key, options = cur_matrix[0]
     for option in options:
