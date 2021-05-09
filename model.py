@@ -51,7 +51,7 @@ class ReviewPredictionModel(nn.Module):
         (batch_input, batch_target, batch_mask) = list_to_device((batch_input, batch_target, batch_mask), device)
         
         if self.regressive_bert_style:
-            prediction = th.flatten(self(batch_input, batch_mask))
+            prediction = self(batch_input, batch_mask)
             loss = loss_fn(prediction, batch_target)
         else:
             prediction = self(batch_input, batch_mask)

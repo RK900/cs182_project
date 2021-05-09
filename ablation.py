@@ -8,6 +8,7 @@ matrix = [
   ("enable_aug", [False]),
   ("enable_aug3", [False, True]),
   ("max_training_samples", [200000]),
+  ("lstm_bidi", [False, True]),
   ("lstm_hidden_size", [64, 128, 256, 512, 1024, 2048]),
   ("epochs", [20])
 ]
