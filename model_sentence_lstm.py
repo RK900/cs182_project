@@ -8,25 +8,17 @@ def list_to_device(all_tensors, device):
   return [tensor.to(device) for tensor in all_tensors]
 
 class ReviewPredictionModel(nn.Module):
-    def __init__(self, embedded_size, rnn_size, num_layers=1, dropout=0):
+    def __init__(self, embedded_size, rnn_size, num_layers=1, dropout=0, bidi_lstm = False):
         super().__init__()
         self.rnn_size = rnn_size
-        self.lstm = nn.LSTM(input_size=embedded_size, hidden_size=rnn_size, num_layers=num_layers, batch_first=True)
-        self.linear1 = nn.Linear(rnn_size, rnn_size // 2)
-        self.linear2 = nn.Linear(rnn_size // 2, rnn_size // 4)
-        self.linear3 = nn.Linear(rnn_size // 4, rnn_size // 8)
-        self.finalLinear = nn.Linear(rnn_size // 8, 9)
-        self.linear = nn.Linear(rnn_size, 9)
+        self.bidi_lstm = bidi_lstm
+        self.lstm = nn.LSTM(input_size=embedded_size, hidden_size=rnn_size, num_layers=num_layers, batch_first=True, bidirectional=bidi_lstm)
+
+        self.linear = nn.Linear(rnn_size * 2 if bidi_lstm else rnn_size, 9)
 
     def forward(self, x):
         through_lstm,  _ = self.lstm(x)
         return self.linear(through_lstm[:,-1,:])
-#         x = x.reshape((x.shape[0], x.shape[1] * x.shape[2]))
-#         x = th.relu(self.linear1(x))
-#         x = th.relu(self.linear2(x))
-#         x = th.relu(self.linear3(x))
-#         return self.finalLinear(x)
-        # return self.finalLinear(x[:, 0, :])
     
     def run_batch(self, device, loss_fn, batch_input, batch_target, batch_mask):
         (batch_input, batch_target) = batch_to_torch(batch_input, (batch_target - 1) * 2)

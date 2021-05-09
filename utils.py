@@ -1,3 +1,4 @@
+import mmap
 import hickle
 import os.path
 import os
@@ -21,5 +22,12 @@ def manual_memo(compute, store, load, folder):
   else:
     return load(folder)
 
-def hash_key(key):
-  return str(hashlib.sha256(key.encode("utf-8")).hexdigest())[:8]
+# def hash_key(key):
+#   return str(hashlib.sha256(key.encode("utf-8")).hexdigest())[:8]
+
+def hash_file(file):
+  h  = hashlib.sha256()
+  with open(file, 'rb') as f:
+    with mmap.mmap(f.fileno(), 0, prot=mmap.PROT_READ) as mm:
+      h.update(mm)
+  return str(h.hexdigest())[:8]

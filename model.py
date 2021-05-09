@@ -6,8 +6,8 @@ from torch.nn.modules import rnn
 
 from transformers import DistilBertForSequenceClassification, PretrainedConfig
 
-batch_to_torch = lambda b_in,b_target,b_mask: (th.tensor(b_in, dtype=th.long),
-                                        th.tensor(b_target, dtype=th.float if False else th.long),
+batch_to_torch = lambda b_in,b_target,b_mask,regressive: (th.tensor(b_in, dtype=th.long),
+                                        th.tensor(b_target, dtype=th.float if regressive else th.long),
                                         th.tensor(b_mask, dtype=th.float))
 
 def list_to_device(all_tensors, device):
@@ -23,7 +23,7 @@ class ReviewPredictionModel(nn.Module):
         self.regressive_bert_style = regressive_bert_style
         self.token_count = token_count
         if regressive_bert_style:
-          self.transformer = DistilBertForSequenceClassification.from_pretrained('distilbert-base-uncased')
+          self.transformer = DistilBertForSequenceClassification.from_pretrained('distilbert-base-uncased', num_labels=1)
         else:
           self.transformer = DistilBertForSequenceClassification.from_pretrained('distilbert-base-uncased', num_labels=9)
         
@@ -45,9 +45,9 @@ class ReviewPredictionModel(nn.Module):
     
     def run_batch(self, device, loss_fn, batch_input, batch_target, batch_mask):
         if self.regressive_bert_style:
-            (batch_input, batch_target, batch_mask) = batch_to_torch(batch_input, batch_target, batch_mask)
+            (batch_input, batch_target, batch_mask) = batch_to_torch(batch_input, batch_target, batch_mask, self.regressive_bert_style)
         else:
-            (batch_input, batch_target, batch_mask) = batch_to_torch(batch_input, (batch_target - 1) * 2, batch_mask)
+            (batch_input, batch_target, batch_mask) = batch_to_torch(batch_input, (batch_target - 1) * 2, batch_mask, self.regressive_bert_style)
         (batch_input, batch_target, batch_mask) = list_to_device((batch_input, batch_target, batch_mask), device)
         
         if self.regressive_bert_style:
