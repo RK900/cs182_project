@@ -14,6 +14,8 @@ num_sentences = 10
 max_tokenized_length = 64
 embedding_size = 769
 lstm_hidden_size = best_accuracy_params["lstm_hidden_size"]
+sentence_pairs = best_accuracy_params["sentence_pairs"]
+lstm_bidi = best_accuracy_params["lstm_bidi"]
 
 nlp = English()
 nlp.add_pipe("sentencizer")
@@ -33,7 +35,11 @@ def get_embeds(text):
 	
 	doc = nlp(text)
 	embeddeds = []
-	sents = list(doc.sents)
+	sents = [str(sent) for sent in doc.sents]
+	if sentence_pairs == True and len(sents) > 1:
+		sents = [a + b for a, b in zip(sents, sents[1:])]
+	if sentence_pairs == "3" and len(sents) > 2:
+		sents = [a + b + c for a, b, c in zip(sents, sents[1:], sents[2:])]
 	all_tokenized = []
 	for sentence in sents[:num_sentences]:
 			sentence = str(sentence)
@@ -61,7 +67,7 @@ def get_embeds(text):
 	return embeddeds
 
 main_model = ReviewPredictionModel(
-	embedding_size, lstm_hidden_size
+	embedding_size, lstm_hidden_size, bidi_lstm=lstm_bidi
 )
 main_model.load_state_dict(th.load(f"main-model.pt"))
 main_model.eval()

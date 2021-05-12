@@ -3,13 +3,20 @@ import nbclient
 import os
 
 matrix = [
-  ("regressive_style_finetuning", [False, True]),
-  ("enable_orig", [False, "orig", "preprocess"]),
-  ("enable_aug", [False]),
-  ("enable_aug3", [False, True]),
+  ("balanced_categories", [False]),
   ("max_training_samples", [200000]),
-  ("lstm_bidi", [False, True]),
-  ("lstm_hidden_size", [64, 128, 256, 512, 1024, 2048]),
+  # ("enable_orig", ["orig", "preprocess", "big"]),
+  ("enable_orig", ["orig", "preprocess"]),
+  ("enable_aug", [False]),
+  # ("enable_aug3", [True, False]),
+  ("enable_aug3", [True]),
+  # ("sentence_pairs", ["3", True, False]),
+  ("sentence_pairs", [True]),
+  ("regressive_style_finetuning", [False]),
+  # ("lstm_bidi", [True, False]),
+  ("lstm_bidi", [False]),
+  # ("lstm_hidden_size", [64, 256, 1024, 2048]),
+  ("lstm_hidden_size", [64]),
   ("epochs", [20])
 ]
 

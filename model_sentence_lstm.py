@@ -18,7 +18,13 @@ class ReviewPredictionModel(nn.Module):
 
     def forward(self, x):
         through_lstm,  _ = self.lstm(x)
-        return self.linear(through_lstm[:,-1,:])
+        if self.bidi_lstm:
+            out_forward = through_lstm[:, -1, :self.rnn_size]
+            out_reverse = through_lstm[:, 0, self.rnn_size:]
+            through_lstm = th.cat((out_forward, out_reverse), 1)
+        else:
+            through_lstm = through_lstm[:,-1,:]
+        return self.linear(through_lstm)
     
     def run_batch(self, device, loss_fn, batch_input, batch_target, batch_mask):
         (batch_input, batch_target) = batch_to_torch(batch_input, (batch_target - 1) * 2)
