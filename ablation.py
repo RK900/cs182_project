@@ -5,18 +5,13 @@ import os
 matrix = [
   ("balanced_categories", [False]),
   ("max_training_samples", [200000]),
-  # ("enable_orig", ["orig", "preprocess", "big"]),
-  ("enable_orig", ["orig", "preprocess"]),
+  ("enable_orig", ["orig", "preprocess", "big"]),
   ("enable_aug", [False]),
-  # ("enable_aug3", [True, False]),
-  ("enable_aug3", [True]),
-  # ("sentence_pairs", ["3", True, False]),
-  ("sentence_pairs", [True]),
+  ("enable_aug3", [True, False]),
+  ("sentence_pairs", ["3", True, False]),
   ("regressive_style_finetuning", [False]),
-  # ("lstm_bidi", [True, False]),
-  ("lstm_bidi", [False]),
-  # ("lstm_hidden_size", [64, 256, 1024, 2048]),
-  ("lstm_hidden_size", [64]),
+  ("lstm_bidi", [True, False]),
+  ("lstm_hidden_size", [64, 256, 1024, 2048]),
   ("epochs", [20])
 ]
 
